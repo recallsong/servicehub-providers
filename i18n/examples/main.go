@@ -6,7 +6,6 @@ import (
 	"github.com/recallsong/go-utils/logs"
 	"github.com/recallsong/servicehub"
 	"github.com/recallsong/servicehub-providers/i18n"
-	_ "github.com/recallsong/servicehub-providers/i18n"
 )
 
 type define struct{}
