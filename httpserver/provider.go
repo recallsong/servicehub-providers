@@ -114,12 +114,12 @@ func (p *provider) Close() error {
 
 // Provide .
 func (p *provider) Provide(name string, args ...interface{}) interface{} {
-	intercepters := getIntercepters(args)
+	interceptors := getInterceptors(args)
 	return Router(&router{
 		p:            p,
 		routeMap:     p.router.routeMap,
 		group:        name,
-		intercepters: intercepters,
+		interceptors: interceptors,
 	})
 }
 

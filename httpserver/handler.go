@@ -16,15 +16,15 @@ import (
 	"github.com/recallsong/go-utils/reflectx"
 )
 
-func getIntercepters(options []interface{}) []echo.MiddlewareFunc {
+func getInterceptors(options []interface{}) []echo.MiddlewareFunc {
 	var list []echo.MiddlewareFunc
 	for _, opt := range options {
-		var inter Intercepter
+		var inter Interceptor
 		switch val := opt.(type) {
-		case Intercepter:
+		case Interceptor:
 			inter = val
 		case func(handler func(ctx Context) error) func(ctx Context) error:
-			inter = Intercepter(val)
+			inter = Interceptor(val)
 		case echo.MiddlewareFunc:
 			list = append(list, val)
 		case func(echo.HandlerFunc) echo.HandlerFunc:
@@ -84,7 +84,7 @@ func (r *router) add(method, path string, handler interface{}, inters []echo.Mid
 			panic(fmt.Errorf("%s %s: not support http server handler type: %v", method, path, handler))
 		}
 	}
-	inters = append(r.intercepters[0:len(r.intercepters):len(r.intercepters)], inters...)
+	inters = append(r.interceptors[0:len(r.interceptors):len(r.interceptors)], inters...)
 	if len(inters) > 0 {
 		handler := echoHandler
 		for i := len(inters) - 1; i >= 0; i-- {

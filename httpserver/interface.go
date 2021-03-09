@@ -43,8 +43,8 @@ type Context interface {
 	ParamNames() []string
 }
 
-// Intercepter .
-type Intercepter func(handler func(ctx Context) error) func(ctx Context) error
+// Interceptor .
+type Interceptor func(handler func(ctx Context) error) func(ctx Context) error
 
 type context struct {
 	echo.Context
@@ -99,7 +99,7 @@ type router struct {
 	group        string
 	desc         string
 	hide         bool
-	intercepters []echo.MiddlewareFunc
+	interceptors []echo.MiddlewareFunc
 }
 
 func (r *router) Server() *echo.Echo {
@@ -126,7 +126,7 @@ func (r *router) Add(method, path string, handler interface{}, options ...interf
 		group:    r.group,
 		hide:     r.hide,
 	}
-	intercepters := getIntercepters(options)
+	interceptors := getInterceptors(options)
 	for _, opt := range options {
 		processOptions(route, opt)
 	}
@@ -134,7 +134,7 @@ func (r *router) Add(method, path string, handler interface{}, options ...interf
 	r.routes = append(r.routes, route)
 
 	if handler != nil {
-		r.add(method, path, handler, intercepters)
+		r.add(method, path, handler, interceptors)
 	}
 }
 
@@ -160,9 +160,9 @@ func WithHide(hide bool) interface{} {
 	})
 }
 
-// WithIntercepter for Router
-func WithIntercepter(fn func(handler func(ctx Context) error) func(ctx Context) error) interface{} {
-	return Intercepter(fn)
+// WithInterceptor for Router
+func WithInterceptor(fn func(handler func(ctx Context) error) func(ctx Context) error) interface{} {
+	return Interceptor(fn)
 }
 
 type routesSorter []*route
@@ -264,17 +264,17 @@ func (r *router) Static(prefix, root string, options ...interface{}) {
 	}
 	p := filepath.Join(prefix, "/**")
 	r.Add(http.MethodGet, p, nil, options...)
-	intercepters := append(r.intercepters, getIntercepters(options)...)
+	interceptors := append(r.interceptors, getInterceptors(options)...)
 	if fs == nil {
-		r.p.server.Static(prefix, root) // TODO intercepters ...
-		r.p.server.File(path.Join(prefix, "index.html"), path.Join(root, "index.html"), intercepters...)
+		r.p.server.Static(prefix, root) // TODO interceptors ...
+		r.p.server.File(path.Join(prefix, "index.html"), path.Join(root, "index.html"), interceptors...)
 	} else {
 		fs := filesystem.New(fs).SetRoot(root).SetRoute(prefix)
 		handler := fs.Handler
 		r.p.server.GET(p, func(c echo.Context) error {
 			handler.ServeHTTP(c.Response(), c.Request())
 			return nil
-		}, intercepters...)
+		}, interceptors...)
 	}
 }
 
@@ -288,16 +288,16 @@ func (r *router) File(path, file string, options ...interface{}) {
 		}
 	}
 	r.Add(http.MethodGet, path, nil, options...)
-	intercepters := append(r.intercepters, getIntercepters(options)...)
+	interceptors := append(r.interceptors, getInterceptors(options)...)
 	if fs == nil {
-		r.p.server.File(path, file, intercepters...)
+		r.p.server.File(path, file, interceptors...)
 	} else {
 		fs := filesystem.New(fs).SetRoot(file).SetRoute(path)
 		handler := fs.Handler
 		r.p.server.GET(path, func(c echo.Context) error {
 			handler.ServeHTTP(c.Response(), c.Request())
 			return nil
-		}, intercepters...)
+		}, interceptors...)
 	}
 }
 

@@ -1,4 +1,4 @@
-package intercepters
+package interceptors
 
 import (
 	"fmt"

@@ -22,8 +22,8 @@ type Translator interface {
 
 // I18n .
 type I18n interface {
-	Text(namespace, lang LanguageCodes, key string) string
-	Sprintf(namespace, lang LanguageCodes, key string, args ...interface{}) string
+	Text(namespace string, lang LanguageCodes, key string) string
+	Sprintf(namespace string, lang LanguageCodes, key string, args ...interface{}) string
 	Translator(namespace string) Translator
 }
 

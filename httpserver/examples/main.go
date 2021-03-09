@@ -25,9 +25,13 @@ func (d *define) Creator() servicehub.Creator {
 	}
 }
 
+type config struct {
+	Message string `file:"message"`
+}
+
 type provider struct {
-	C  *config
-	Ls logs.Logger
+	C *config
+	L logs.Logger
 }
 
 func (p *provider) Init(ctx servicehub.Context) error {
@@ -44,10 +48,10 @@ func (p *provider) Init(ctx servicehub.Context) error {
 	// 请求参数为 http.ResponseWriter, *http.Request
 	routes.GET("/hello",
 		func(resp http.ResponseWriter, req *http.Request) {
-			resp.Write([]byte(p.Cfg.Message))
+			resp.Write([]byte(p.C.Message))
 		},
 		httpserver.WithDescription("this is hello provider"),
-		httpserver.WithIntercepter(
+		httpserver.WithInterceptor(
 			func(handler func(ctx httpserver.Context) error) func(ctx httpserver.Context) error {
 				return func(ctx httpserver.Context) error {
 					return handler(ctx)
@@ -127,12 +131,12 @@ func (p *provider) Init(ctx servicehub.Context) error {
 }
 
 func (p *provider) Start() error {
-	p.Logger.Info("now hello provider is running...")
+	p.L.Info("now hello provider is running...")
 	return nil
 }
 
 func (p *provider) Close() error {
-	p.Logger.Info("now hello provider is closing...")
+	p.L.Info("now hello provider is closing...")
 	return nil
 }
 
@@ -142,5 +146,5 @@ func init() {
 
 func main() {
 	hub := servicehub.New()
-	hub.Run("examples", os.Args...)
+	hub.Run("examples", "", os.Args...)
 }

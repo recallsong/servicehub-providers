@@ -13,7 +13,7 @@ http-server ServiceProvider 提供 http 服务器，供其他 Provider 使用。
 支持拦截器、多种请求处理器，*请求参数* 和 *返回参数* 不分顺序
 
 ### 例子
-[例子详情](./examples/httpserver/main.go)
+[例子详情](./httpserver/examples/main.go)
 
 ### 请求参数
 支持请求类型:
